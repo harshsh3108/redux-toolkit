@@ -1,54 +1,73 @@
-import React, { useState, useEffect } from 'react';
-import Swal from 'sweetalert2';
+import React, { useEffect, useCallback } from "react";
+import Swal from "sweetalert2";
 
-import Header from './Header';
-import Table from './Table';
-import Add from './Add';
-import Edit from './Edit';
+import Header from "./Header";
+import Table from "./Table";
+import Add from "./Add";
+import Edit from "./Edit";
 
-import { employeesData } from '../../data';
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setEmployees,
+  setSelectedEmployee,
+  setIsEditing,
+  setIsAdding,
+} from "../../store/dashboardReducer";
 
 const Dashboard = ({ setIsAuthenticated }) => {
-  const [employees, setEmployees] = useState(employeesData);
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [isAdding, setIsAdding] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const dashboard = useSelector((state) => state.dashboard);
+  const dispatch = useDispatch();
+  const { employees, selectedEmployee, isEditing, isAdding } = dashboard;
+  // const [ setEmployees] = useState(employeesData);
+  // const [ setSelectedEmployee] = useState(null);
+  // const [isAdding, setIsAdding] = useState(false);
+  // const [isEditing, setIsEditing] = useState(false);
+
+  const setAdd = (payload) => dispatch(setIsAdding(payload));
+  const setDashboardEmployees = useCallback(
+    (payload) => dispatch(setEmployees(payload)),
+    [dispatch]
+  );
+  const setDashboardIsEditing = (payload) => dispatch(setIsEditing(payload));
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem('employees_data'));
-    if (data !== null && Object.keys(data).length !== 0) setEmployees(data);
-  }, []);
+    const data = JSON.parse(localStorage.getItem("employees_data"));
+    if (data !== null && Object.keys(data).length !== 0)
+      setDashboardEmployees(data);
+  }, [setDashboardEmployees]);
 
-  const handleEdit = id => {
-    const [employee] = employees.filter(employee => employee.id === id);
+  const handleEdit = (id) => {
+    const employee = employees.find((employee) => employee.id === id);
 
-    setSelectedEmployee(employee);
-    setIsEditing(true);
+    dispatch(setSelectedEmployee(employee));
+    setDashboardIsEditing(true);
   };
 
-  const handleDelete = id => {
+  const handleDelete = (id) => {
     Swal.fire({
-      icon: 'warning',
-      title: 'Are you sure?',
+      icon: "warning",
+      title: "Are you sure?",
       text: "You won't be able to revert this!",
       showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, cancel!',
-    }).then(result => {
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+    }).then((result) => {
       if (result.value) {
-        const [employee] = employees.filter(employee => employee.id === id);
+        const employee = employees.find((employee) => employee.id === id);
 
         Swal.fire({
-          icon: 'success',
-          title: 'Deleted!',
+          icon: "success",
+          title: "Deleted!",
           text: `${employee.firstName} ${employee.lastName}'s data has been deleted.`,
           showConfirmButton: false,
           timer: 1500,
         });
 
-        const employeesCopy = employees.filter(employee => employee.id !== id);
-        localStorage.setItem('employees_data', JSON.stringify(employeesCopy));
-        setEmployees(employeesCopy);
+        const employeesCopy = employees.filter(
+          (employee) => employee.id !== id
+        );
+        localStorage.setItem("employees_data", JSON.stringify(employeesCopy));
+        setDashboardEmployees(employeesCopy);
       }
     });
   };
@@ -58,7 +77,7 @@ const Dashboard = ({ setIsAuthenticated }) => {
       {!isAdding && !isEditing && (
         <>
           <Header
-            setIsAdding={setIsAdding}
+            setIsAdding={setAdd}
             setIsAuthenticated={setIsAuthenticated}
           />
           <Table
@@ -71,16 +90,16 @@ const Dashboard = ({ setIsAuthenticated }) => {
       {isAdding && (
         <Add
           employees={employees}
-          setEmployees={setEmployees}
-          setIsAdding={setIsAdding}
+          setEmployees={setDashboardEmployees}
+          setIsAdding={setAdd}
         />
       )}
       {isEditing && (
         <Edit
           employees={employees}
           selectedEmployee={selectedEmployee}
-          setEmployees={setEmployees}
-          setIsEditing={setIsEditing}
+          setEmployees={setDashboardEmployees}
+          setIsEditing={setDashboardIsEditing}
         />
       )}
     </div>

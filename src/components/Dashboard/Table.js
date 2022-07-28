@@ -1,9 +1,9 @@
 import React from 'react';
 
 const Table = ({ employees, handleEdit, handleDelete }) => {
-  employees.forEach((employee, i) => {
-    employee.id = i + 1;
-  });
+  // employees.forEach((employee, i) => {
+  //   employee.id = i + 1;
+  // });
 
   const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
