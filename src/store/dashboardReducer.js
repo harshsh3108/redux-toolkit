@@ -25,7 +25,6 @@ export const dashboardSlice = createSlice({
       state.isAdding = action.payload;
     },
   },
-  extraReducers: (builder) => {},
 });
 
 export const { setEmployees, setSelectedEmployee, setIsEditing, setIsAdding } =

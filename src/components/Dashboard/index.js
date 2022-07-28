@@ -18,10 +18,6 @@ const Dashboard = ({ setIsAuthenticated }) => {
   const dashboard = useSelector((state) => state.dashboard);
   const dispatch = useDispatch();
   const { employees, selectedEmployee, isEditing, isAdding } = dashboard;
-  // const [ setEmployees] = useState(employeesData);
-  // const [ setSelectedEmployee] = useState(null);
-  // const [isAdding, setIsAdding] = useState(false);
-  // const [isEditing, setIsEditing] = useState(false);
 
   const setAdd = (payload) => dispatch(setIsAdding(payload));
   const setDashboardEmployees = useCallback(
